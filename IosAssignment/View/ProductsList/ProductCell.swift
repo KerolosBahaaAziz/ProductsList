@@ -34,7 +34,7 @@ class ProductCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(with product: Products, layout: ViewController.LayoutType) {
+    func configure(with product: Products, layout: ProductsViewController.LayoutType) {
         titleLabel.text = product.title
         loadImage(from: product.image ?? "")
         print("layout: \(layout)")
@@ -54,7 +54,7 @@ class ProductCell: UICollectionViewCell {
         }.resume()
     }
 
-    private func applyLayout(_ layout: ViewController.LayoutType) {
+    private func applyLayout(_ layout: ProductsViewController.LayoutType) {
         
         NSLayoutConstraint.deactivate(currentConstraints)
         imageView.translatesAutoresizingMaskIntoConstraints = false
