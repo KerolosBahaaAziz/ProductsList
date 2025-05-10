@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import SkeletonView
 
 class ProductCell: UICollectionViewCell {
     private let imageView = UIImageView()
@@ -21,7 +22,10 @@ class ProductCell: UICollectionViewCell {
         imageView.clipsToBounds = true
         titleLabel.font = UIFont.systemFont(ofSize: 14)
         titleLabel.numberOfLines = 2
-
+        
+        isSkeletonable = true
+        contentView.isSkeletonable = true
+        
         contentView.addSubview(imageView)
         contentView.addSubview(titleLabel)
         
@@ -36,22 +40,8 @@ class ProductCell: UICollectionViewCell {
 
     func configure(with product: Products, layout: ProductsViewController.LayoutType) {
         titleLabel.text = product.title
-        loadImage(from: product.image ?? "")
-        print("layout: \(layout)")
+        imageView.loadImage(from: product.image)
         applyLayout(layout)
-    }
-
-    private func loadImage(from urlString: String) {
-        imageView.image = nil
-        guard let url = URL(string: urlString) else { return }
-
-        URLSession.shared.dataTask(with: url) { data, _, error in
-            if let data = data, let image = UIImage(data: data), error == nil {
-                DispatchQueue.main.async {
-                    self.imageView.image = image
-                }
-            }
-        }.resume()
     }
 
     private func applyLayout(_ layout: ProductsViewController.LayoutType) {

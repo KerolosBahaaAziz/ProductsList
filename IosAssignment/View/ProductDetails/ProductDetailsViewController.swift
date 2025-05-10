@@ -84,7 +84,7 @@ class ProductDetailsViewController: UIViewController, UIScrollViewDelegate {
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
 
-            headerImageView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            headerImageView.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 30),
             headerImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             headerImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             headerHeightConstraint,
