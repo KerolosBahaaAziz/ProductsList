@@ -46,9 +46,12 @@ class ProductDetailsViewController: UIViewController, UIScrollViewDelegate {
             $0.numberOfLines = 0
         }
 
-        descriptionLabel.font = UIFont.systemFont(ofSize: 15)
+        descriptionLabel.font = UIFont.systemFont(ofSize: 17)
         descriptionLabel.textColor = .darkGray
 
+        priceLabel.font = UIFont.systemFont(ofSize: 19)
+        categoryLabel.font = UIFont.systemFont(ofSize: 19)
+        
         view.addSubview(scrollView)
         scrollView.addSubview(headerImageView)
         scrollView.addSubview(contentView)
@@ -154,8 +157,8 @@ class ProductDetailsViewController: UIViewController, UIScrollViewDelegate {
         let imageView = UIImageView(image: UIImage(systemName: name, withConfiguration: config))
         imageView.tintColor = .systemYellow
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.widthAnchor.constraint(equalToConstant: 20).isActive = true
-        imageView.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        imageView.widthAnchor.constraint(equalToConstant: 30).isActive = true
+        imageView.heightAnchor.constraint(equalToConstant: 30).isActive = true
         return imageView
     }
 

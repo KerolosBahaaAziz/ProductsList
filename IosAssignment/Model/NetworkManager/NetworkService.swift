@@ -9,6 +9,7 @@ import Foundation
 
 class NetworkService{
     static let shared = NetworkService()
+    private init() {}
     
     func fetchData<T: Decodable>(APICase: API.Endpoint, DecodingModel: T.Type, completion: @escaping (Result<T, ErrorMessage>) -> Void) {
             
@@ -18,8 +19,11 @@ class NetworkService{
                 completion(.failure(.invalidRequest))
                 return
             }
+        
+          var request = URLRequest(url: url)
+          request.httpMethod = APICase.method.rawValue
             
-            let task = URLSession.shared.dataTask(with: url) { data, response, error in
+         let task = URLSession.shared.dataTask(with: request) { data, response, error in
                 if error != nil {
                     completion(.failure(.invalidRequest))
                     return

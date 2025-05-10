@@ -140,7 +140,7 @@ extension ProductsViewController: UICollectionViewDataSource, UICollectionViewDe
         print("selectedProduct \(indexPath.item)")
          let detailsVC = ProductDetailsViewController()
         detailsVC.product = selectedProduct  
-         present(detailsVC, animated: true)
+        navigationController?.pushViewController(detailsVC, animated: true)
     }
 }
 
@@ -168,6 +168,7 @@ extension ProductsViewController{
                     self.collectionView.reloadData()
                 }
             }else{
+                self.showAlert(title: "Error", message:error?.rawValue ?? "Unknown Error")
                 print("Error is: \(error?.rawValue)")
             }
         }

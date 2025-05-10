@@ -21,6 +21,12 @@ enum API {
                 return "\(API.baseURL)/products/\(id)"
             }
         }
+        var method: HTTPMethod {
+            switch self {
+            case .product, .productDetails:
+                return .get
+            }
+        }
     }
 }
 
@@ -28,5 +34,12 @@ enum ErrorMessage: String, Error {
     case invalidData = "Sorry, something went wrong. Try again."
     case invalidRequest = "Sorry, this URL isn't good enough. Try again later."
     case invalidResponse = "Server error. Modify your search and try again."
+}
+
+enum HTTPMethod: String {
+    case get = "GET"
+    case post = "POST"
+    case put = "PUT"
+    case delete = "DELETE"
 }
 
