@@ -118,6 +118,7 @@ class ProductsViewController: UIViewController {
     }
 }
 
+// MARK: - UICollectionView Delegates
 extension ProductsViewController: UICollectionViewDataSource, UICollectionViewDelegate{
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return products.count
@@ -134,7 +135,7 @@ extension ProductsViewController: UICollectionViewDataSource, UICollectionViewDe
         let selectedProduct = products[indexPath.item]
         print("selectedProduct \(indexPath.item)")
          let detailsVC = ProductDetailsViewController()
-        // detailsVC.product = selectedProduct  // Pass the selected product data
+        detailsVC.product = selectedProduct  
          present(detailsVC, animated: true)
     }
 }
