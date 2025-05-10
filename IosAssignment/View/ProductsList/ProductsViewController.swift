@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SkeletonView
 
 class ProductsViewController: UIViewController {
 
@@ -80,6 +81,9 @@ class ProductsViewController: UIViewController {
         view.addSubview(toggleButton)
         view.addSubview(collectionView)
         view.addSubview(titleLabel)
+        
+        collectionView.isSkeletonable = true
+        view.isSkeletonable = true
 
         toggleButton.translatesAutoresizingMaskIntoConstraints = false
         collectionView.translatesAutoresizingMaskIntoConstraints = false
@@ -140,13 +144,27 @@ extension ProductsViewController: UICollectionViewDataSource, UICollectionViewDe
     }
 }
 
+extension ProductsViewController: SkeletonCollectionViewDataSource {
+    func collectionSkeletonView(_ skeletonView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return 7
+    }
+
+    func collectionSkeletonView(_ skeletonView: UICollectionView, cellIdentifierForItemAt indexPath: IndexPath) -> ReusableCellIdentifier {
+        return "Cell"
+    }
+
+}
+
 extension ProductsViewController{
     func getProducts(){
+        collectionView.showAnimatedGradientSkeleton()
+
         repo.getProducts(limit: 7) { products, error in
             if error == nil{
                 self.products = products ?? []
-                print(products?[4].title)
                 DispatchQueue.main.async{
+                    self.collectionView.stopSkeletonAnimation()
+                    self.collectionView.hideSkeleton(reloadDataAfter: true, transition: .crossDissolve(0.25))
                     self.collectionView.reloadData()
                 }
             }else{
