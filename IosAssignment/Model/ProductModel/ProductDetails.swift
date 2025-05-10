@@ -10,6 +10,10 @@ import Foundation
 struct ProductDetails: Codable, Identifiable {
     let id: Int?
     let title: String?
-    let image: String?
+   // let image: String?
+    let price: Double?
+    let description: String?
+    let category: String?
+    let rating: Rating?
 }
 
