@@ -21,6 +21,7 @@ class ProductsViewController: UIViewController {
             for indexPath in collectionView.indexPathsForVisibleItems {
                 collectionView.reloadItems(at: [indexPath])
             }
+            toggleLayout()
         }
     }
 
@@ -39,12 +40,9 @@ class ProductsViewController: UIViewController {
         let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .medium)
         let image = UIImage(systemName: "square.grid.2x2", withConfiguration: config)
         button.setImage(image, for: .normal)
-        ///button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = .systemBlue
-        //button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         button.layer.cornerRadius = 8
         button.contentEdgeInsets = UIEdgeInsets(top: 8, left: 12, bottom: 8, right: 12)
-        button.addTarget(self, action: #selector(toggleLayout), for: .touchUpInside)
+        button.addTarget(self, action: #selector(switchLayout), for: .touchUpInside)
         return button
     }()
 
@@ -64,8 +62,12 @@ class ProductsViewController: UIViewController {
         getProducts()
         
     }
+    
+    @objc func switchLayout() {
+        layoutType = (layoutType == .list) ? .grid : .list
+    }
 
-    @objc func toggleLayout() {
+    func toggleLayout() {
         let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .medium)
         let iconName = (layoutType == .list) ? "square.grid.2x2" : "list.bullet"
         let image = UIImage(systemName: iconName, withConfiguration: config)
