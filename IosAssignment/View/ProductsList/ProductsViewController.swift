@@ -16,6 +16,12 @@ class ProductsViewController: UIViewController {
     var products: [Products] = []
     var didLoadData = false
     
+    //for pagiantion
+    let limit = 7
+    var currentSkip = 0
+    var isLoading = false
+
+    
     enum LayoutType {
         case list, grid
     }
