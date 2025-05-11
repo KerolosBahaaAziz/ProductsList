@@ -81,3 +81,54 @@ extension ProductsViewController{
 
 }
 
+// MARK: - Code for Baginationn
+/*
+extension ProductsViewController {
+
+    func getProductsBagination(reset: Bool = false) {
+        
+        if reset {
+            products.removeAll()
+            currentSkip = 0
+        }
+
+        guard !isLoading else { return }
+        isLoading = true
+
+        if reset {
+            collectionView.showAnimatedGradientSkeleton()
+        }
+
+        repo.getProductsBagination(limit: limit, skip: currentSkip) { [weak self] products, error in
+            guard let self = self else { return }
+            self.isLoading = false
+
+            DispatchQueue.main.async {
+                self.collectionView.stopSkeletonAnimation()
+                self.collectionView.hideSkeleton(reloadDataAfter: true, transition: .crossDissolve(0.25))
+            }
+
+            if let products = products {
+                self.products.append(contentsOf: products)
+                self.currentSkip += self.limit
+
+                DispatchQueue.main.async {
+                    self.collectionView.reloadData()
+                }
+            } else if let error = error {
+                print("Load error: \(error.rawValue)")
+            }
+        }
+    }
+
+    // Detect scroll to bottom
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let offsetY = scrollView.contentOffset.y
+        let contentHeight = scrollView.contentSize.height
+
+        if offsetY > contentHeight - scrollView.frame.height - 100 {
+            getProductsBagination()
+        }
+    }
+}
+*/
