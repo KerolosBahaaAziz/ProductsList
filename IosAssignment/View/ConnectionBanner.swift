@@ -17,6 +17,7 @@ class ConnectionBanner: UIView {
         label.font = .systemFont(ofSize: 14, weight: .semibold)
         return label
     }()
+    
 
     override init(frame: CGRect) {
         super.init(frame: frame)

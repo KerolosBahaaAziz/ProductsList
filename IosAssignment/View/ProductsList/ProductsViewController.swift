@@ -12,7 +12,8 @@ import Network
 class ProductsViewController: UIViewController {
 
     var repo = ProductsRepository()
-    
+    private var noInternetBanner: NoInternetBanner?
+
     enum LayoutType {
         case list, grid
     }
@@ -28,7 +29,8 @@ class ProductsViewController: UIViewController {
     }
 
     var products: [Products] = []
-    
+    private var didLoadData = false
+
     private let titleLabel: UILabel = {
            let label = UILabel()
            label.text = "Products List"
@@ -62,8 +64,20 @@ class ProductsViewController: UIViewController {
         
         setupView()
         getProducts()
+        NotificationCenter.default.addObserver(self, selector: #selector(networkStatusChanged), name: .internetStatusChanged, object: nil)
+
+            // Initial check
+        if NetworkMonitor.shared.isConnected {
+            getProducts()
+        }
         
     }
+    
+    @objc private func networkStatusChanged(notification: Notification) {
+        guard NetworkMonitor.shared.isConnected, !didLoadData else { return }
+        getProducts()
+    }
+
     
     @objc func switchLayout() {
         layoutType = (layoutType == .list) ? .grid : .list
@@ -157,27 +171,65 @@ extension ProductsViewController: SkeletonCollectionViewDataSource {
 }
 
 extension ProductsViewController{
-    func getProducts(){
+    func getProducts() {
+        
         guard NetworkMonitor.shared.isConnected else {
-            self.showAlert(title: "No Internet", message: "Please check your connection.")
+           // self.showAlert(title: "No Connection", message: "Please check your internet connection")
+            DispatchQueue.main.async{
+                self.collectionView.showAnimatedGradientSkeleton()
+            }
             return
         }
+        didLoadData = true
+        self.collectionView.showAnimatedGradientSkeleton()
         
-        collectionView.showAnimatedGradientSkeleton()
-
-        repo.getProducts(limit: 7) { products, error in
-            if error == nil{
+        
+        self.repo.getProducts(limit: 7) { products, error in
+            DispatchQueue.main.async {
+                self.collectionView.stopSkeletonAnimation()
+                self.collectionView.hideSkeleton(reloadDataAfter: true, transition: .crossDissolve(0.25))
+            }
+            
+            if let error = error {
+                DispatchQueue.main.async {
+                    self.showAlert(title: "Error", message: error.rawValue)
+                }
+            } else {
                 self.products = products ?? []
-                DispatchQueue.main.async{
-                    self.collectionView.stopSkeletonAnimation()
-                    self.collectionView.hideSkeleton(reloadDataAfter: true, transition: .crossDissolve(0.25))
+                DispatchQueue.main.async {
                     self.collectionView.reloadData()
                 }
-            }else{
-                self.showAlert(title: "Error", message:error?.rawValue ?? "Unknown Error")
-                print("Error is: \(error?.rawValue)")
+            }
+            
+        }
+    }
+
+
+    private func showNoInternetBanner() {
+        guard noInternetBanner == nil else { return } // prevent duplicate banners
+
+        let banner = NoInternetBanner()
+        banner.translatesAutoresizingMaskIntoConstraints = false
+        self.view.addSubview(banner)
+
+        NSLayoutConstraint.activate([
+            banner.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+            banner.centerYAnchor.constraint(equalTo: self.view.centerYAnchor),
+            banner.widthAnchor.constraint(equalTo: self.view.widthAnchor, constant: -32),
+            banner.heightAnchor.constraint(equalToConstant: 280)
+        ])
+
+        banner.retryAction = { [weak self, weak banner] in
+            guard let self = self else { return }
+
+            if NetworkMonitor.shared.isConnected {
+                banner?.removeFromSuperview()
+                self.noInternetBanner = nil
+                self.getProducts()
             }
         }
+
+        noInternetBanner = banner
     }
 }
 
