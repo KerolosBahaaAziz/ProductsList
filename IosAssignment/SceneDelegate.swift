@@ -23,42 +23,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             window?.makeKeyAndVisible()
         
         NetworkMonitor.shared.startMonitoring()
-        observeNetworkStatus()
-    }
-
-    private func observeNetworkStatus() {
-        NetworkMonitor.shared.addObserver { [weak self] isConnected in
-            guard let self = self, let window = self.window else { return }
-
-            if !isConnected {
-                if self.banner == nil {
-                    let banner = ConnectionBanner()
-
-                    // Safe area inset usage to avoid notch
-                    let safeTop = window.safeAreaInsets.top
-                    banner.frame = CGRect(x: 16,
-                                          y: safeTop + 8,
-                                          width: window.frame.width - 32,
-                                          height: 44)
-
-                    banner.alpha = 0
-                    window.addSubview(banner)
-                    UIView.animate(withDuration: 0.3) {
-                        banner.alpha = 1
-                    }
-                    self.banner = banner
-                }
-            } else {
-                if let banner = self.banner {
-                    UIView.animate(withDuration: 0.3, animations: {
-                        banner.alpha = 0
-                    }) { _ in
-                        banner.removeFromSuperview()
-                        self.banner = nil
-                    }
-                }
-            }
-        }
+        
     }
     
     func sceneDidDisconnect(_ scene: UIScene) {

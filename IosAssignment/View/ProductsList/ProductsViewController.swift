@@ -13,7 +13,7 @@ class ProductsViewController: UIViewController {
 
     var repo = ProductsRepository()
     private var noInternetBanner: NoInternetBanner?
-
+    private var banner: ConnectionBanner?
     enum LayoutType {
         case list, grid
     }
@@ -59,10 +59,47 @@ class ProductsViewController: UIViewController {
         return collectionView
     }()
 
+    func observeNetworkStatus() {
+        NetworkMonitor.shared.addObserver { [weak self] isConnected in
+            guard let self = self else { return }
+
+            if !isConnected {
+                if self.banner == nil {
+                    let banner = ConnectionBanner()
+                    banner.translatesAutoresizingMaskIntoConstraints = false
+                    self.view.addSubview(banner)
+
+                    NSLayoutConstraint.activate([
+                        banner.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 8),
+                        banner.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 16),
+                        banner.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -16),
+                        banner.heightAnchor.constraint(equalToConstant: 44)
+                    ])
+
+                    banner.alpha = 0
+                    UIView.animate(withDuration: 0.3) {
+                        banner.alpha = 1
+                    }
+
+                    self.banner = banner
+                }
+            } else {
+                if let banner = self.banner {
+                    UIView.animate(withDuration: 0.3, animations: {
+                        banner.alpha = 0
+                    }) { _ in
+                        banner.removeFromSuperview()
+                        self.banner = nil
+                    }
+                }
+            }
+        }
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setupView()
+        observeNetworkStatus()
         getProducts()
         NotificationCenter.default.addObserver(self, selector: #selector(networkStatusChanged), name: .internetStatusChanged, object: nil)
 
