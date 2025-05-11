@@ -8,8 +8,8 @@
 import Foundation
 
 class ProductsRepository{
-    func getProducts(limit: Int, completion: @escaping ([Products]?, ErrorMessage?) -> Void){
-        NetworkService.shared.fetchData(APICase: .product(limit: limit), DecodingModel: [Products].self) { results in
+    func getProducts(completion: @escaping ([Products]?, ErrorMessage?) -> Void){
+        NetworkService.shared.fetchData(APICase: .product, DecodingModel: [Products].self) { results in
             switch results{
             case .success(let products):
                 print("products elements = \(products.count)")

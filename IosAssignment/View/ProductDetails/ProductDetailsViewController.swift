@@ -98,7 +98,7 @@ class ProductDetailsViewController: UIViewController, UIScrollViewDelegate {
             contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor)
         ])
 
-        // Layout content labels
+        
         NSLayoutConstraint.activate([
             categoryLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
             categoryLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
@@ -133,7 +133,7 @@ class ProductDetailsViewController: UIViewController, UIScrollViewDelegate {
     }
 
     private func setRatingStars(_ rating: Double) {
-        // Remove previous stars
+        
         ratingStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
         
         let fullStars = Int(rating)
