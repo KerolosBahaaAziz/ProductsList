@@ -7,6 +7,7 @@
 
 import UIKit
 import SkeletonView
+import Network
 
 class ProductsViewController: UIViewController {
 
@@ -157,6 +158,11 @@ extension ProductsViewController: SkeletonCollectionViewDataSource {
 
 extension ProductsViewController{
     func getProducts(){
+        guard NetworkMonitor.shared.isConnected else {
+            self.showAlert(title: "No Internet", message: "Please check your connection.")
+            return
+        }
+        
         collectionView.showAnimatedGradientSkeleton()
 
         repo.getProducts(limit: 7) { products, error in
