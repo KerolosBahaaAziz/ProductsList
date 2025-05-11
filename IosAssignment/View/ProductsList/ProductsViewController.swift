@@ -7,6 +7,7 @@
 
 import UIKit
 import SkeletonView
+import Network
 
 class ProductsViewController: UIViewController {
 
@@ -140,7 +141,7 @@ extension ProductsViewController: UICollectionViewDataSource, UICollectionViewDe
         print("selectedProduct \(indexPath.item)")
          let detailsVC = ProductDetailsViewController()
         detailsVC.product = selectedProduct  
-         present(detailsVC, animated: true)
+        navigationController?.pushViewController(detailsVC, animated: true)
     }
 }
 
@@ -157,6 +158,11 @@ extension ProductsViewController: SkeletonCollectionViewDataSource {
 
 extension ProductsViewController{
     func getProducts(){
+        guard NetworkMonitor.shared.isConnected else {
+            self.showAlert(title: "No Internet", message: "Please check your connection.")
+            return
+        }
+        
         collectionView.showAnimatedGradientSkeleton()
 
         repo.getProducts(limit: 7) { products, error in
@@ -168,6 +174,7 @@ extension ProductsViewController{
                     self.collectionView.reloadData()
                 }
             }else{
+                self.showAlert(title: "Error", message:error?.rawValue ?? "Unknown Error")
                 print("Error is: \(error?.rawValue)")
             }
         }

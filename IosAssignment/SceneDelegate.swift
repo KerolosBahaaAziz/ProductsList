@@ -10,15 +10,57 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
-
+    private var banner: ConnectionBanner?
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
-        guard let _ = (scene as? UIWindowScene) else { return }
+        guard let windowScene = (scene as? UIWindowScene) else { return }
+            
+            window = UIWindow(windowScene: windowScene)
+            window?.rootViewController = SplashViewController()
+            window?.makeKeyAndVisible()
+        
+        NetworkMonitor.shared.startMonitoring()
+        observeNetworkStatus()
     }
 
+    private func observeNetworkStatus() {
+        NetworkMonitor.shared.addObserver { [weak self] isConnected in
+            guard let self = self, let window = self.window else { return }
+
+            if !isConnected {
+                if self.banner == nil {
+                    let banner = ConnectionBanner()
+
+                    // Safe area inset usage to avoid notch
+                    let safeTop = window.safeAreaInsets.top
+                    banner.frame = CGRect(x: 16,
+                                          y: safeTop + 8,
+                                          width: window.frame.width - 32,
+                                          height: 44)
+
+                    banner.alpha = 0
+                    window.addSubview(banner)
+                    UIView.animate(withDuration: 0.3) {
+                        banner.alpha = 1
+                    }
+                    self.banner = banner
+                }
+            } else {
+                if let banner = self.banner {
+                    UIView.animate(withDuration: 0.3, animations: {
+                        banner.alpha = 0
+                    }) { _ in
+                        banner.removeFromSuperview()
+                        self.banner = nil
+                    }
+                }
+            }
+        }
+    }
+    
     func sceneDidDisconnect(_ scene: UIScene) {
         // Called as the scene is being released by the system.
         // This occurs shortly after the scene enters the background, or when its session is discarded.
