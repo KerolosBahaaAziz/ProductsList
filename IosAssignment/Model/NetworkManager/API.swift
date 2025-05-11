@@ -10,20 +10,20 @@ enum API {
     static let baseURL = "https://fakestoreapi.com"
     
     enum Endpoint {
-        case product(limit: Int)
-        case productDetails(id: Int)
+        case product
+        case productPagination(limit: Int, skip:Int)
 
         var urlString: String {
             switch self {
-            case .product(let limit):
-                return "\(API.baseURL)/products?limit=\(limit)"
-            case .productDetails(let id):
-                return "\(API.baseURL)/products/\(id)"
+            case .product:
+                return "\(API.baseURL)/products?"
+            case .productPagination(let limit, let skip):
+                return "\(API.baseURL)/products?limit=\(limit)&skip=\(skip)"
             }
         }
         var method: HTTPMethod {
             switch self {
-            case .product, .productDetails:
+            case .product, .productPagination:
                 return .get
             }
         }

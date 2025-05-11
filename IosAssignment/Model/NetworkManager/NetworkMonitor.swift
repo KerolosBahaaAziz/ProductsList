@@ -14,7 +14,12 @@ class NetworkMonitor {
     private let monitor = NWPathMonitor()
     private let queue = DispatchQueue.global(qos: .background)
 
-    private(set) var isConnected: Bool = false
+    var isConnected: Bool = true {
+        didSet {
+            NotificationCenter.default.post(name: .internetStatusChanged, object: nil)
+        }
+    }
+    private var isMonitoringStarted = false
     private var observers: [(Bool) -> Void] = []
 
     private init() {}
@@ -34,6 +39,18 @@ class NetworkMonitor {
         monitor.start(queue: queue)
     }
 
+    func checkConnection(completion: @escaping (Bool) -> Void) {
+            if isMonitoringStarted {
+                completion(isConnected)
+            } else {
+                startMonitoring()
+                // Give it a moment to determine status
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    completion(self.isConnected)
+                }
+            }
+        }
+    
     func addObserver(_ observer: @escaping (Bool) -> Void) {
         observers.append(observer)
     }
@@ -46,4 +63,6 @@ class NetworkMonitor {
 }
 
 
-
+extension Notification.Name {
+    static let internetStatusChanged = Notification.Name("internetStatusChanged")
+}

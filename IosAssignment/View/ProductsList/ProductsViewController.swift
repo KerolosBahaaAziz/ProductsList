@@ -12,6 +12,9 @@ import Network
 class ProductsViewController: UIViewController {
 
     var repo = ProductsRepository()
+    var banner: ConnectionBanner?
+    var products: [Products] = []
+    var didLoadData = false
     
     enum LayoutType {
         case list, grid
@@ -27,8 +30,6 @@ class ProductsViewController: UIViewController {
         }
     }
 
-    var products: [Products] = []
-    
     private let titleLabel: UILabel = {
            let label = UILabel()
            label.text = "Products List"
@@ -57,13 +58,21 @@ class ProductsViewController: UIViewController {
         return collectionView
     }()
 
+   
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setupView()
+        observeNetworkStatus()
         getProducts()
+        NotificationCenter.default.addObserver(self, selector: #selector(networkStatusChanged), name: .internetStatusChanged, object: nil)
         
     }
+    
+    @objc private func networkStatusChanged(notification: Notification) {
+        guard NetworkMonitor.shared.isConnected, !didLoadData else { return }
+        getProducts()
+    }
+
     
     @objc func switchLayout() {
         layoutType = (layoutType == .list) ? .grid : .list
@@ -154,30 +163,5 @@ extension ProductsViewController: SkeletonCollectionViewDataSource {
         return "Cell"
     }
 
-}
-
-extension ProductsViewController{
-    func getProducts(){
-        guard NetworkMonitor.shared.isConnected else {
-            self.showAlert(title: "No Internet", message: "Please check your connection.")
-            return
-        }
-        
-        collectionView.showAnimatedGradientSkeleton()
-
-        repo.getProducts(limit: 7) { products, error in
-            if error == nil{
-                self.products = products ?? []
-                DispatchQueue.main.async{
-                    self.collectionView.stopSkeletonAnimation()
-                    self.collectionView.hideSkeleton(reloadDataAfter: true, transition: .crossDissolve(0.25))
-                    self.collectionView.reloadData()
-                }
-            }else{
-                self.showAlert(title: "Error", message:error?.rawValue ?? "Unknown Error")
-                print("Error is: \(error?.rawValue)")
-            }
-        }
-    }
 }
 
